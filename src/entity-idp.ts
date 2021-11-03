@@ -89,6 +89,7 @@ export class IdentityProvider extends Entity {
     encryptThenSign?: boolean,
     relayState?: string,
   ) {
+    console.log('fork test')
     const protocol = namespace.binding[binding];
     // can support post, redirect and post simple sign bindings for login response
     let context: any = null;
