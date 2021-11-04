@@ -24,13 +24,16 @@ function base64LoginRequest(referenceTagXPath: string, entity: any, customTagRep
   let id: string = '';
 
   if (metadata && metadata.idp && metadata.sp) {
+    console.log('jestem w if metadata && metadata.idp && metadata.sp')
     const base = metadata.idp.getSingleSignOnService(binding.post);
     let rawSamlRequest: string;
     if (spSetting.loginRequestTemplate && customTagReplacement) {
+      console.log('jestem w if spSetting.loginRequestTemplate && customTagReplacement')
       const info = customTagReplacement(spSetting.loginRequestTemplate.context);
       id = get(info, 'id', null);
       rawSamlRequest = get(info, 'context', null);
     } else {
+      console.log('jestem w binding-post else')
       const nameIDFormat = spSetting.nameIDFormat;
       const selectedNameIDFormat = Array.isArray(nameIDFormat) ? nameIDFormat[0] : nameIDFormat;
       id = spSetting.generateID();
@@ -46,6 +49,7 @@ function base64LoginRequest(referenceTagXPath: string, entity: any, customTagRep
       } as any);
     }
     if (metadata.idp.isWantAuthnRequestsSigned()) {
+      console.log('jestem w metadata.idp.isWantAuthnRequestsSigned()')
       const { privateKey, privateKeyPass, requestSignatureAlgorithm: signatureAlgorithm, transformationAlgorithms } = spSetting;
       return {
         id,
@@ -65,6 +69,7 @@ function base64LoginRequest(referenceTagXPath: string, entity: any, customTagRep
       };
     }
     // No need to embeded XML signature
+    console.log('jestem przed return')
     return {
       id,
       context: utility.base64Encode(rawSamlRequest),
