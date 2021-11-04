@@ -96,6 +96,7 @@ async function base64LoginResponse(requestInfo: any = {}, entity: any, user: any
   const nameIDFormat = idpSetting.nameIDFormat;
   const selectedNameIDFormat = Array.isArray(nameIDFormat) ? nameIDFormat[0] : nameIDFormat;
   if (metadata && metadata.idp && metadata.sp) {
+    console.log('binding-post metadata && metadata.idp && metadata.sp')
     const base = metadata.sp.getAssertionConsumerService(binding.post);
     let rawSamlResponse: string;
     const nowTime = new Date();
@@ -127,9 +128,11 @@ async function base64LoginResponse(requestInfo: any = {}, entity: any, user: any
       AttributeStatement: '',
     };
     if (idpSetting.loginResponseTemplate && customTagReplacement) {
+      console.log('binding-post idpSetting.loginResponseTemplate && customTagReplacement')
       const template = customTagReplacement(idpSetting.loginResponseTemplate.context);
       rawSamlResponse = get(template, 'context', null);
     } else {
+      console.log('binding-post else')
       if (requestInfo !== null) {
         tvalue.InResponseTo = requestInfo.extract.request.id;
       }
@@ -146,6 +149,7 @@ async function base64LoginResponse(requestInfo: any = {}, entity: any, user: any
     // step: sign assertion ? -> encrypted ? -> sign message ?
     if (metadata.sp.isWantAssertionsSigned()) {
       // console.debug('sp wants assertion signed');
+      console.log('binding-post libsaml.constructSAMLSignature1')
       rawSamlResponse = libsaml.constructSAMLSignature({
         ...config,
         rawSamlMessage: rawSamlResponse,
@@ -163,6 +167,7 @@ async function base64LoginResponse(requestInfo: any = {}, entity: any, user: any
     // SAML response must be signed sign message first, then encrypt
     if (!encryptThenSign && (spSetting.wantMessageSigned || !metadata.sp.isWantAssertionsSigned())) {
       // console.debug('sign then encrypt and sign entire message');
+      console.log('binding-post libsaml.constructSAMLSignature2')
       rawSamlResponse = libsaml.constructSAMLSignature({
         ...config,
         rawSamlMessage: rawSamlResponse,
@@ -179,6 +184,7 @@ async function base64LoginResponse(requestInfo: any = {}, entity: any, user: any
 
     if (idpSetting.isAssertionEncrypted) {
       // console.debug('idp is configured to do encryption');
+      console.log('binding-post libsaml.encryptAssertion')
       const context = await libsaml.encryptAssertion(entity.idp, entity.sp, rawSamlResponse);
       if (encryptThenSign) {
         //need to decode it
@@ -190,6 +196,7 @@ async function base64LoginResponse(requestInfo: any = {}, entity: any, user: any
 
     //sign after encrypting
     if (encryptThenSign && (spSetting.wantMessageSigned || !metadata.sp.isWantAssertionsSigned())) {
+      console.log('libsaml.constructSAMLSignature 3')
       rawSamlResponse = libsaml.constructSAMLSignature({
         ...config,
         rawSamlMessage: rawSamlResponse,
@@ -201,7 +208,7 @@ async function base64LoginResponse(requestInfo: any = {}, entity: any, user: any
         },
       });
     }
-
+    console.log('binding-post Promise.resolve')
     return Promise.resolve({
       id,
       context: utility.base64Encode(rawSamlResponse),
