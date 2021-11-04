@@ -95,6 +95,7 @@ export class IdentityProvider extends Entity {
     let context: any = null;
     switch (protocol) {
       case namespace.binding.post:
+        console.log('wchodze do postBinding.base64LoginResponse')
         context = await postBinding.base64LoginResponse(requestInfo, {
           idp: this,
           sp,
