@@ -342,6 +342,7 @@ const libSaml = () => {
       sig.keyInfoProvider = new this.getKeyInfo(signingCert, signatureConfig);
       console.log('libsaml utility.readPrivateKey')
       sig.signingKey = utility.readPrivateKey(privateKey, privateKeyPass, true);
+      console.log('sig.signingKey: ', sig.signingKey)
       if (signatureConfig) {
         sig.computeSignature(rawSamlMessage, signatureConfig);
       } else {
