@@ -186,6 +186,7 @@ function getPublicKeyPemFromCertificate(x509Certificate: string) {
 * If passphrase is used to protect the .pem content (recommend)
 */
 export function readPrivateKey(keyString: string | Buffer, passphrase: string | undefined, isOutputString?: boolean) {
+  console.log('utility readPrivateKey')
   return isString(passphrase) ? this.convertToString(pki.privateKeyToPem(pki.decryptRsaPrivateKey(String(keyString), passphrase)), isOutputString) : keyString;
 }
 /**
