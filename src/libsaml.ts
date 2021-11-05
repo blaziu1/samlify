@@ -389,13 +389,15 @@ const libSaml = () => {
       if (selection.length === 0) {
         throw new Error('ERR_ZERO_SIGNATURE');
       }
-
+      console.log('libsaml verifySignature')
+      console.log('new SignedXml')
       const sig = new SignedXml();
       let verified = true;
       // need to refactor later on
       selection.forEach(signatureNode => {
-
+        console.log('opts.signatureAlgorithm: ', opts.signatureAlgorithm)
         sig.signatureAlgorithm = opts.signatureAlgorithm;
+        console.log('jestem za sig.signatureAlgorithm')
 
         if (!opts.keyFile && !opts.metadata) {
           throw new Error('ERR_UNDEFINED_SIGNATURE_VERIFIER_OPTIONS');
