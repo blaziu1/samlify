@@ -433,6 +433,7 @@ const libSaml = () => {
       }
       console.log('libsaml verifySignature')
       console.log('new SignedXml')
+      console.log('opts: ', opts)
       SignedXml.SignatureAlgorithms["http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha256"] = MySignatureAlgorithm
       const sig = new SignedXml();
       let verified = true;
