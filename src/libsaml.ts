@@ -452,6 +452,9 @@ const libSaml = () => {
         sig.loadSignature(signatureNode);
 
         doc.removeChild(signatureNode);
+        console.log('sig: ', sig)
+        console.log('************************')
+        console.log('doc.toString()', doc.toString())
         console.log('jestem przed sig.checkSignature')
 
         verified = verified && sig.checkSignature(doc.toString());
