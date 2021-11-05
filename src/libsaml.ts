@@ -240,6 +240,45 @@ const libSaml = () => {
     return prefix + camelContent.charAt(0).toUpperCase() + camelContent.slice(1);
   }
 
+  function MySignatureAlgorithm() {
+    //sign the given SignedInfo using the key. return base64 signature value
+    this.getSignature = function(signedInfo, signingKey, callback) {
+      /*var msg = crypto.createHash("sha256").update(signedInfo).digest();
+      console.log('signingKey: ', signingKey)
+      
+      var sigObj = secp256k1.ecdsaSign(msg, signingKey)
+      */
+      console.log('signingKey: ', signingKey)
+      var signature = signingKey.sign(signedInfo)
+      if (callback) callback(null, signature)
+      return signature
+    }
+  
+    this.verifySignature = function(str, pubkey, signatureValue, callback) {
+      var res = pubkey.verify(str, signatureValue)
+      if (callback) callback(null, res)
+      return res
+    }
+  
+    this.getAlgorithmName = function() {
+      return "http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha256"
+    }
+  }
+
+  function MyKeyInfo(cert) {
+    this.cert = cert;
+    this.getKeyInfo = function(key, prefix) {
+        //prefix = prefix || ''
+        //prefix = prefix ? prefix + ':' : prefix
+      return "<X509Data><X509Certificate>"+ this.cert +"</X509Certificate></X509Data>"
+    }
+    this.getKey = function(keyInfo) {
+      //you can use the keyInfo parameter to extract the key in any way you want   
+      return this.cert
+      //return fs.readFileSync("./keys/cert.pem")
+    }
+  }
+
   return {
 
     createXPath,
@@ -391,6 +430,7 @@ const libSaml = () => {
       }
       console.log('libsaml verifySignature')
       console.log('new SignedXml')
+      SignedXml.SignatureAlgorithms["http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha256"] = MySignatureAlgorithm
       const sig = new SignedXml();
       let verified = true;
       // need to refactor later on
@@ -457,8 +497,15 @@ const libSaml = () => {
         console.log('doc.toString()', doc.toString())
         console.log('jestem przed sig.checkSignature')
 
-        verified = verified && sig.checkSignature(doc.toString());
+        //if (sig.signatureAlgorithm == "http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha256"){
+        //  SignedXml.SignatureAlgorithms["http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha256"] = MySignatureAlgorithm
+        //  verified = verified && publicKey.verify(doc.toString(), sig.signatureValue);
+        //} else {
+          verified = verified && sig.checkSignature(doc.toString());
+        //}
+        
         console.log('jestem za sig.checkSignature')
+        console.log('verified: ', verified)
 
         // immediately throw error when any one of the signature is failed to get verified
         if (!verified) {
