@@ -501,12 +501,14 @@ const libSaml = () => {
         console.log('doc.toString()', doc.toString())
         console.log('jestem przed sig.checkSignature')
 
-        //if (sig.signatureAlgorithm == "http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha256"){
-        //  SignedXml.SignatureAlgorithms["http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha256"] = MySignatureAlgorithm
+        if (sig.signatureAlgorithm == "http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha256"){
+          var signature123 = sig.keyInfoProvider.getKey()
+          console.log('signature123: ', signature123)
+          //SignedXml.SignatureAlgorithms["http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha256"] = MySignatureAlgorithm
         //  verified = verified && publicKey.verify(doc.toString(), sig.signatureValue);
-        //} else {
+        } else {
           verified = verified && sig.checkSignature(doc.toString());
-        //}
+        }
         
         console.log('jestem za sig.checkSignature')
         console.log('verified: ', verified)
