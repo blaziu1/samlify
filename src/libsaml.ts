@@ -503,6 +503,7 @@ const libSaml = () => {
         console.log('sig.signatureAlgorithm: ', sig.signatureAlgorithm)
 
         if (sig.signatureAlgorithm == "http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha256"){
+          console.log('jestem w sig.signatureAlgorithm == "http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha256"')
           var signature123 = sig.keyInfoProvider.getKey()
           console.log('signature123: ', signature123)
           //SignedXml.SignatureAlgorithms["http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha256"] = MySignatureAlgorithm
