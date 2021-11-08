@@ -259,9 +259,6 @@ const libSaml = () => {
     }
   
     this.verifySignature = function(str, pubkey, signatureValue, callback) {
-      console.log('pubkey: ', pubkey)
-      console.log('str: ', str)
-      console.log('signatureValue: ', signatureValue)
       var res = pubkey.verify(str, signatureValue)
       if (callback) callback(null, res)
       return res
