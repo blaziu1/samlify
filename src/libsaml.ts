@@ -504,13 +504,17 @@ const libSaml = () => {
         console.log('doc.toString()', doc.toString())
         console.log('jestem przed sig.checkSignature')
         console.log('sig.signatureAlgorithm: ', sig.signatureAlgorithm)
-        console.log('sig.x509Certificate: ', sig.x509Certificate)
+
         //console.log('metadataCert: ', metadataCert);
 
         if (sig.signatureAlgorithm == "http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha256"){
           console.log('jestem w sig.signatureAlgorithm == "http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha256"')
-          var signature123 = sig.keyInfoProvider.getKey()
-          console.log('signature123: ', signature123)
+          //console.log('sig.x509Certificate: ', sig.x509Certificate)
+          const algorithm = 'ES256'
+          const x509 = `-----BEGIN CERTIFICATE-----`+sig.x509Certificate+`-----END CERTIFICATE-----`
+          console.log('x509: ', x509);
+          //var signature123 = sig.keyInfoProvider.getKey()
+          //console.log('signature123: ', signature123)
           //SignedXml.SignatureAlgorithms["http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha256"] = MySignatureAlgorithm
         //  verified = verified && publicKey.verify(doc.toString(), sig.signatureValue);
         } else {
