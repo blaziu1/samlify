@@ -15,6 +15,8 @@ import * as xmlenc from '@authenio/xml-encryption';
 import { extract } from './extractor';
 import camelCase from 'camelcase';
 import { getContext } from './api';
+import deasync from 'deasync';
+import { importX509 } from 'jose'
 
 const signatureAlgorithms = algorithms.signature;
 const digestAlgorithms = algorithms.digest;
@@ -513,6 +515,15 @@ const libSaml = () => {
           const algorithm = 'ES256'
           const x509 = `-----BEGIN CERTIFICATE-----`+sig.x509Certificate+`-----END CERTIFICATE-----`
           console.log('x509: ', x509);
+          var exec = deasync(importX509);
+          let ecPublicKey;
+          try {
+            ecPublicKey = exec(x509, algorithm)
+            console.log('ecPublicKey: ', ecPublicKey);
+          } catch(err) {
+            console.log('err');
+          }
+          //const ecPublicKey = await importX509(x509, algorithm)
           //var signature123 = sig.keyInfoProvider.getKey()
           //console.log('signature123: ', signature123)
           //SignedXml.SignatureAlgorithms["http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha256"] = MySignatureAlgorithm
