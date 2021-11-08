@@ -513,7 +513,7 @@ const libSaml = () => {
           console.log('jestem w sig.signatureAlgorithm == "http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha256"')
           //console.log('sig.x509Certificate: ', sig.x509Certificate)
           const algorithm = 'ES256'
-          const x509 = `-----BEGIN CERTIFICATE-----`+sig.x509Certificate+`-----END CERTIFICATE-----`
+          const x509 = `-----BEGIN CERTIFICATE-----\r\n`+sig.x509Certificate+`\r\n-----END CERTIFICATE-----`
           console.log('x509: ', x509);
           var exec = deasync(importX509);
           console.log('jestem za deasync')
