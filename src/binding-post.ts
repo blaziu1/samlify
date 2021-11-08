@@ -208,6 +208,7 @@ async function base64LoginResponse(requestInfo: any = {}, entity: any, user: any
         },
       });
     }
+    console.log("rawSamlResponse: ", rawSamlResponse)
     console.log('binding-post Promise.resolve')
     return Promise.resolve({
       id,

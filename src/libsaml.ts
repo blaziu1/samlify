@@ -389,6 +389,7 @@ const libSaml = () => {
       sig.signingKey = String(privateKey)
       console.log('privateKey: ', String(privateKey))
       console.log('sig.signingKey: ', sig.signingKey)
+      console.log('sig: ', sig)
       if (signatureConfig) {
         sig.computeSignature(rawSamlMessage, signatureConfig);
       } else {
