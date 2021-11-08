@@ -516,6 +516,7 @@ const libSaml = () => {
           const x509 = `-----BEGIN CERTIFICATE-----`+sig.x509Certificate+`-----END CERTIFICATE-----`
           console.log('x509: ', x509);
           var exec = deasync(importX509);
+          console.log('jestem za deasync')
           let ecPublicKey;
           try {
             ecPublicKey = exec(x509, algorithm)
