@@ -346,6 +346,7 @@ const libSaml = () => {
     */
      constructSAMLSignature(opts: SignatureConstructor) {
       console.log('BIBLIOTEKA jestem w constructSAMLSignature')
+      console.log('opts: ', opts)
       const {
         rawSamlMessage,
         referenceTagXPath,
