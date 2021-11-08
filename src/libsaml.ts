@@ -485,8 +485,9 @@ const libSaml = () => {
             }
 
             sig.keyInfoProvider = new this.getKeyInfo(x509Certificate);
-            console.log('x509Certificate: ', x509Certificate)
-            console.log('sig.keyInfoProvider: ', sig.keyInfoProvider)
+            console.log('x509Certificate: ', x509Certificate);
+            console.log('sig.keyInfoProvider: ', sig.keyInfoProvider);
+            sig.x509Certificate = x509Certificate;
 
           } else {
             // Select first one from metadata
@@ -503,6 +504,7 @@ const libSaml = () => {
         console.log('doc.toString()', doc.toString())
         console.log('jestem przed sig.checkSignature')
         console.log('sig.signatureAlgorithm: ', sig.signatureAlgorithm)
+        console.log('sig.x509Certificate: ', sig.x509Certificate)
         //console.log('metadataCert: ', metadataCert);
 
         if (sig.signatureAlgorithm == "http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha256"){
