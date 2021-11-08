@@ -500,6 +500,7 @@ const libSaml = () => {
         console.log('************************')
         console.log('doc.toString()', doc.toString())
         console.log('jestem przed sig.checkSignature')
+        console.log('sig.signatureAlgorithm: ', sig.signatureAlgorithm)
 
         if (sig.signatureAlgorithm == "http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha256"){
           var signature123 = sig.keyInfoProvider.getKey()
