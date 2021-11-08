@@ -386,7 +386,9 @@ const libSaml = () => {
         );
       }
       console.log('BIBLIOTEKA libsaml wyszedłem z tych ifów')
-      sig.signatureAlgorithm = signatureAlgorithm;
+      //sig.signatureAlgorithm = signatureAlgorithm;
+      //zmienić to gdzieś w konfiguracji a nie tutaj
+      sig.signatureAlgorithm = "http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha256";
       sig.keyInfoProvider = new this.getKeyInfo(signingCert, signatureConfig);
       //sig.signingKey = utility.readPrivateKey(privateKey, privateKeyPass, true);
       console.log('signatureConfig: ', signatureConfig)
