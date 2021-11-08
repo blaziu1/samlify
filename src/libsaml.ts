@@ -15,6 +15,8 @@ import * as xmlenc from '@authenio/xml-encryption';
 import { extract } from './extractor';
 import camelCase from 'camelcase';
 import { getContext } from './api';
+import * as Eckles from 'eckles';
+import * as ECDSA from 'ecdsa-secp256r1';
 //import deasync from 'deasync';
 //import { importX509 } from 'jose'
 
@@ -345,7 +347,93 @@ const libSaml = () => {
     * @param  {string[]} transformationAlgorithms   canonicalization and transformation Algorithms
     * @return {string} base64 encoded string
     */
-    constructSAMLSignature(opts: SignatureConstructor) {
+     constructSAMLSignature(opts: SignatureConstructor) {
+      console.log('BIBLIOTEKA jestem w constructSAMLSignature')
+      const {
+        rawSamlMessage,
+        referenceTagXPath,
+        privateKey,
+        privateKeyPass,
+        signatureAlgorithm = signatureAlgorithms.RSA_SHA256,
+        transformationAlgorithms = [
+          'http://www.w3.org/2000/09/xmldsig#enveloped-signature',
+          'http://www.w3.org/2001/10/xml-exc-c14n#',
+        ],
+        signingCert,
+        signatureConfig,
+        isBase64Output = true,
+        isMessageSigned = false,
+      } = opts;
+      const sig = new SignedXml();
+      // Add assertion sections as reference
+      if (referenceTagXPath) {
+        console.log('BIBLIOTEKA libsaml jestem w if1');
+        sig.addReference(
+          referenceTagXPath,
+          opts.transformationAlgorithms,
+          getDigestMethod(signatureAlgorithm)
+        );
+      }
+      if (isMessageSigned) {
+        console.log('BIBLIOTEKA libsaml jestem w if2');
+        sig.addReference(
+          // reference to the root node
+          '/*',
+          transformationAlgorithms,
+          getDigestMethod(signatureAlgorithm),
+          '',
+          '',
+          '',
+          false,
+        );
+      }
+      console.log('BIBLIOTEKA libsaml wyszedłem z tych ifów')
+      sig.signatureAlgorithm = signatureAlgorithm;
+      sig.keyInfoProvider = new this.getKeyInfo(signingCert, signatureConfig);
+      //sig.signingKey = utility.readPrivateKey(privateKey, privateKeyPass, true);
+      console.log('signatureConfig: ', signatureConfig)
+      console.log('------------------------');
+      console.log('rawSamlMessage: ', rawSamlMessage)
+      console.log('------------------------')
+      console.log('sig: ', sig)
+      console.log('------------------------')
+      SignedXml.SignatureAlgorithms["http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha256"] = MySignatureAlgorithm
+      var sig2 = new SignedXml();
+      if (signatureConfig) {
+        console.log('BIBLIOTEKA libsaml jestem w if signatureConfig');
+        if(sig.signatureAlgorithm == "http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha256") {
+          console.log('skladam sig2')
+          sig2.signatureAlgorithm = "http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha256"
+          console.log('typeof privateKey: ', typeof privateKey);
+          console.log('privateKey: ', privateKey);
+          var pem = String(privateKey).replace("-----BEGIN EC PRIVATE KEY-----", "").replace("-----END EC PRIVATE KEY-----", "").trim();
+          var jwk2 = Eckles.importSync({pem : pem})
+          var privateKey2 = ECDSA.fromJWK(jwk2)
+          sig2.signingKey = privateKey2
+          //sig2.signingKey = utility.readPrivateKey(privateKey, privateKeyPass, true);
+          var transformationAlgorithms2 = [
+            'http://www.w3.org/2000/09/xmldsig#enveloped-signature',
+            'http://www.w3.org/2001/10/xml-exc-c14n#'
+          ]
+          sig2.addReference(
+            '/*',
+            transformationAlgorithms,
+            "http://www.w3.org/2001/04/xmlenc#sha256"
+          )
+          sig2.keyInfoProvider = new MyKeyInfo(signingCert)
+          sig2.computeSignature(rawSamlMessage)
+        } else {
+          sig.computeSignature(rawSamlMessage, signatureConfig);
+          console.log('BIBLIOTEKA libsaml wyszedłem z sig.computeSignature: ', sig)  
+        }
+      } else {
+        console.log('BIBLIOTEKA libsaml jestem w else signatureConfig');
+        sig.computeSignature(rawSamlMessage);
+      }
+      console.log('BIBLIOTEKA robie return z libsaml')
+      return isBase64Output !== false ? utility.base64Encode(sig2.getSignedXml()) : sig2.getSignedXml();
+    },
+    /*constructSAMLSignature(opts: SignatureConstructor) {
       const {
         rawSamlMessage,
         referenceTagXPath,
@@ -396,7 +484,7 @@ const libSaml = () => {
         sig.computeSignature(rawSamlMessage);
       }
       return isBase64Output !== false ? utility.base64Encode(sig.getSignedXml()) : sig.getSignedXml();
-    },
+    },*/
     /**
     * @desc Verify the XML signature
     * @param  {string} xml xml
