@@ -407,6 +407,7 @@ const libSaml = () => {
           console.log('typeof privateKey: ', typeof privateKey);
           console.log('privateKey: ', privateKey);
           var pem = String(privateKey).replace("-----BEGIN EC PRIVATE KEY-----", "").replace("-----END EC PRIVATE KEY-----", "").trim();
+          console.log('pem: ', pem)
           var jwk2 = Eckles.importSync({pem : pem})
           var privateKey2 = ECDSA.fromJWK(jwk2)
           sig2.signingKey = privateKey2
