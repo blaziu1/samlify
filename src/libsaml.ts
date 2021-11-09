@@ -344,7 +344,7 @@ const libSaml = () => {
     * @param  {string[]} transformationAlgorithms   canonicalization and transformation Algorithms
     * @return {string} base64 encoded string
     */
-     constructSAMLSignature(opts: SignatureConstructor) {
+     /*constructSAMLSignature(opts: SignatureConstructor) {
       console.log('BIBLIOTEKA jestem w constructSAMLSignature')
       console.log('opts: ', opts)
       const {
@@ -417,7 +417,7 @@ const libSaml = () => {
           ]
           sig2.addReference(
             '/*',
-            transformationAlgorithms,
+            transformationAlgorithms2,
             "http://www.w3.org/2001/04/xmlenc#sha256"
           )
           sig2.keyInfoProvider = new MyKeyInfo(signingCert)
@@ -432,8 +432,8 @@ const libSaml = () => {
       }
       console.log('BIBLIOTEKA robie return z libsaml')
       return isBase64Output !== false ? utility.base64Encode(sig2.getSignedXml()) : sig2.getSignedXml();
-    },
-    /*constructSAMLSignature(opts: SignatureConstructor) {
+    },*/
+    constructSAMLSignature(opts: SignatureConstructor) {
       const {
         rawSamlMessage,
         referenceTagXPath,
@@ -484,7 +484,7 @@ const libSaml = () => {
         sig.computeSignature(rawSamlMessage);
       }
       return isBase64Output !== false ? utility.base64Encode(sig.getSignedXml()) : sig.getSignedXml();
-    },*/
+    },
     /**
     * @desc Verify the XML signature
     * @param  {string} xml xml
