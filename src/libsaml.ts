@@ -426,6 +426,7 @@ const libSaml = () => {
           sig2.signatureAlgorithm = "http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha256"
           console.log('typeof privateKey: ', typeof privateKey);
           console.log('privateKey: ', privateKey);
+          console.log('privateKey String: ', String(privateKey))
           var pem = String(privateKey).replace("-----BEGIN EC PRIVATE KEY-----", "").replace("-----END EC PRIVATE KEY-----", "").trim();
           console.log('pem: ', pem)
           var jwk2 = Eckles.importSync({pem : pem})
