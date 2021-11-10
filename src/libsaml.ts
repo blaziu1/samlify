@@ -262,6 +262,7 @@ const libSaml = () => {
 
     this.verifySignature = function(str, x509, signatureValue, callback){
       console.log('str: ', str);
+      console.log('x509: ', x509);
       var sig = new KJUR.crypto.Signature({'alg':'SHA256withECDSA'});
       sig.init(x509);
       sig.updateString(str);
@@ -298,6 +299,7 @@ const libSaml = () => {
   }*/
 
   function MyKeyInfo(cert) {
+    console.log('jestem w MyKeyInfo')
     this.cert = cert;
     this.getKeyInfo = function(key, prefix) {
         //prefix = prefix || ''
@@ -649,7 +651,7 @@ const libSaml = () => {
           //SignedXml.SignatureAlgorithms["http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha256"] = MySignatureAlgorithm
         //  verified = verified && publicKey.verify(doc.toString(), sig.signatureValue);
         //} else {
-          verified = verified && sig.checkSignature(doc.toString(), sig.x509Certificate);
+          verified = verified && sig.checkSignature(doc.toString());
         //}
         
         console.log('jestem za sig.checkSignature')
