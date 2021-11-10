@@ -248,6 +248,8 @@ const libSaml = () => {
 
   function MySignatureAlgorithm() {
     this.getSignature = function(signedInfo, signingKey, callback){
+      console.log('signedInfo: ', signedInfo);
+      console.log('signingKey: ', signingKey);
       var sig = new KJUR.crypto.Signature({"alg": "SHA256withECDSA"});
       sig.init(signingKey);
       sig.updateString(signedInfo);
