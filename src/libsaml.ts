@@ -788,11 +788,14 @@ const libSaml = () => {
     * @return {string} public key
     */
     getKeyInfo(x509Certificate: string, signatureConfig: any = {}) {
+      console.log('jestem w getKeyInfo')
       this.getKeyInfo = key => {
+        console.log('jestem w getKeyInfo2')
         const prefix = signatureConfig.prefix ? `${signatureConfig.prefix}:` : '';
         return `<${prefix}X509Data><${prefix}X509Certificate>${x509Certificate}</${prefix}X509Certificate></${prefix}X509Data>`;
       };
       this.getKey = keyInfo => {
+        console.log('jestem w getKey')
         return utility.getPublicKeyPemFromCertificate(x509Certificate).toString();
       };
     },
