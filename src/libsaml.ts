@@ -261,13 +261,12 @@ const libSaml = () => {
     }
 
     this.verifySignature = function(str, x509, signatureValue, callback){
-      var modified_str = str + "abc";
       console.log('str: ', str);
       console.log('x509: ', x509);
       //var modified_str = str + "abc";
       var sig = new KJUR.crypto.Signature({'alg':'SHA256withECDSA'});
       sig.init(x509);
-      sig.updateString(modified_str);
+      sig.updateString(str);
       var signatureToVerify = Buffer.from(signatureValue, 'base64').toString('hex');
       var res = sig.verify(signatureToVerify);
       console.log('signature valid? : ', res);
