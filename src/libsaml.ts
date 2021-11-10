@@ -649,7 +649,7 @@ const libSaml = () => {
           //SignedXml.SignatureAlgorithms["http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha256"] = MySignatureAlgorithm
         //  verified = verified && publicKey.verify(doc.toString(), sig.signatureValue);
         //} else {
-          verified = verified && sig.checkSignature(doc.toString());
+          verified = verified && sig.checkSignature(doc.toString(), sig.x509Certificate);
         //}
         
         console.log('jestem za sig.checkSignature')
