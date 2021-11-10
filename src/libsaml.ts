@@ -17,6 +17,8 @@ import camelCase from 'camelcase';
 import { getContext } from './api';
 import * as Eckles from 'eckles';
 import * as ECDSA from 'ecdsa-secp256r1';
+import { KJUR } from 'jsrsasign';
+
 //import deasync from 'deasync';
 //import { importX509 } from 'jose'
 
@@ -245,13 +247,29 @@ const libSaml = () => {
   }
 
   function MySignatureAlgorithm() {
+    this.getSignature = function(signedInfo, signingKey, callback){
+      var sig = new KJUR.crypto.Signature({"alg": "SHA256withECDSA"});
+      sig.init(signingKey);
+      sig.updateString(signedInfo);
+      var sigValueHex = sig.sign();
+      var signature = Buffer.from(sigValueHex, 'hex').toString('base64');
+      console.log('MySignatureAlgorithm sigature: ', signature);
+      if (callback) callback(null, signature)
+      return signature
+    }
+
+    this.verifySignature = function(str, x509, signatureValue, callback){
+
+    }
+
+    this.getAlgorithmName = function() {
+      return "http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha256"
+    }
+  }
+
+  /*function MySignatureAlgorithm() {
     //sign the given SignedInfo using the key. return base64 signature value
     this.getSignature = function(signedInfo, signingKey, callback) {
-      /*var msg = crypto.createHash("sha256").update(signedInfo).digest();
-      console.log('signingKey: ', signingKey)
-      
-      var sigObj = secp256k1.ecdsaSign(msg, signingKey)
-      */
       console.log('signingKey: ', signingKey)
       var signature = signingKey.sign(signedInfo)
       if (callback) callback(null, signature)
@@ -267,7 +285,7 @@ const libSaml = () => {
     this.getAlgorithmName = function() {
       return "http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha256"
     }
-  }
+  }*/
 
   function MyKeyInfo(cert) {
     this.cert = cert;
