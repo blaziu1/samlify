@@ -809,6 +809,7 @@ const libSaml = () => {
     * @return {Promise} a promise to resolve the finalized xml
     */
     encryptAssertion(sourceEntity, targetEntity, xml?: string) {
+      console.log('libsaml encryptAssertion')
       // Implement encryption after signature if it has
       return new Promise<string>((resolve, reject) => {
 
@@ -828,6 +829,7 @@ const libSaml = () => {
         }
         // Perform encryption depends on the setting, default is false
         if (sourceEntitySetting.isAssertionEncrypted) {
+          console.log('jestem w sourceEntitySetting.isAssertionEncrypted')
           xmlenc.encrypt(assertions[0].toString(), {
             // use xml-encryption module
             rsa_pub: Buffer.from(utility.getPublicKeyPemFromCertificate(targetEntityMetadata.getX509Certificate(certUse.encrypt)).replace(/\r?\n|\r/g, '')), // public key from certificate
@@ -836,12 +838,15 @@ const libSaml = () => {
             keyEncryptionAlgorithm: sourceEntitySetting.keyEncryptionAlgorithm,
           }, (err, res) => {
             if (err) {
+              console.log('err z xmlenc.encrypt')
               console.error(err);
               return reject(new Error('ERR_EXCEPTION_OF_ASSERTION_ENCRYPTION'));
             }
             if (!res) {
+              console.log('err2 z xmlenc.encrypt')
               return reject(new Error('ERR_UNDEFINED_ENCRYPTED_ASSERTION'));
             }
+            console.log('nie ma żadnego błedu')
             const { encryptedAssertion: encAssertionPrefix } = sourceEntitySetting.tagPrefix;
             const encryptAssertionNode = new dom().parseFromString(`<${encAssertionPrefix}:EncryptedAssertion xmlns:${encAssertionPrefix}="${namespace.names.assertion}">${res}</${encAssertionPrefix}:EncryptedAssertion>`);
             doc.replaceChild(encryptAssertionNode, assertions[0]);
