@@ -249,9 +249,9 @@ const libSaml = () => {
   function MySignatureAlgorithm() {
     this.getSignature = function(signedInfo, signingKey, callback){
       console.log('signedInfo: ', signedInfo);
-      console.log('signingKey: ', signingKey);
+      console.log('signingKey: ', String(signingKey));
       var sig = new KJUR.crypto.Signature({"alg": "SHA256withECDSA"});
-      sig.init(signingKey);
+      sig.init(String(signingKey));
       sig.updateString(signedInfo);
       var sigValueHex = sig.sign();
       var signature = Buffer.from(sigValueHex, 'hex').toString('base64');
@@ -427,11 +427,11 @@ const libSaml = () => {
           console.log('typeof privateKey: ', typeof privateKey);
           console.log('privateKey: ', privateKey);
           console.log('privateKey String: ', String(privateKey))
-          var pem = String(privateKey).replace("-----BEGIN EC PRIVATE KEY-----", "").replace("-----END EC PRIVATE KEY-----", "").trim();
-          console.log('pem: ', pem)
-          var jwk2 = Eckles.importSync({pem : pem})
-          var privateKey2 = ECDSA.fromJWK(jwk2)
-          sig2.signingKey = privateKey2
+          //var pem = String(privateKey).replace("-----BEGIN EC PRIVATE KEY-----", "").replace("-----END EC PRIVATE KEY-----", "").trim();
+          //console.log('pem: ', pem)
+          //var jwk2 = Eckles.importSync({pem : pem})
+          //var privateKey2 = ECDSA.fromJWK(jwk2)
+          sig2.signingKey = privateKey
           //sig2.signingKey = utility.readPrivateKey(privateKey, privateKeyPass, true);
           var transformationAlgorithms2 = [
             'http://www.w3.org/2000/09/xmldsig#enveloped-signature',
