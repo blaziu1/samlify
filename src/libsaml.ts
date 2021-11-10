@@ -261,7 +261,15 @@ const libSaml = () => {
     }
 
     this.verifySignature = function(str, x509, signatureValue, callback){
-
+      console.log('str: ', str);
+      var sig = new KJUR.crypto.Signature({'alg':'SHA256withECDSA'});
+      sig.init(x509);
+      sig.updateString(str);
+      var signatureToVerify = Buffer.from(signatureValue, 'base64').toString('hex');
+      var res = sig.verify(signatureToVerify);
+      console.log('signature valid? : ', res);
+      if (callback) callback(null, res);
+      return res;
     }
 
     this.getAlgorithmName = function() {
@@ -620,15 +628,15 @@ const libSaml = () => {
 
         //console.log('metadataCert: ', metadataCert);
 
-        if (sig.signatureAlgorithm == "http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha256"){
-          console.log('jestem w sig.signatureAlgorithm == "http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha256"')
+        //if (sig.signatureAlgorithm == "http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha256"){
+          //console.log('jestem w sig.signatureAlgorithm == "http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha256"')
           //console.log('sig.x509Certificate: ', sig.x509Certificate)
-          const algorithm = 'ES256'
-          const x509 = `-----BEGIN CERTIFICATE-----\r\n`+sig.x509Certificate+`\r\n-----END CERTIFICATE-----`
-          console.log('x509: ', x509);
+          //const algorithm = 'ES256'
+          //const x509 = `-----BEGIN CERTIFICATE-----\r\n`+sig.x509Certificate+`\r\n-----END CERTIFICATE-----`
+          //console.log('x509: ', x509);
           //var exec = deasync(importX509);
           //console.log('jestem za deasync')
-          let ecPublicKey;
+          //let ecPublicKey;
           /*try {
             ecPublicKey = exec(x509, algorithm)
             console.log('ecPublicKey: ', ecPublicKey);
@@ -640,9 +648,9 @@ const libSaml = () => {
           //console.log('signature123: ', signature123)
           //SignedXml.SignatureAlgorithms["http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha256"] = MySignatureAlgorithm
         //  verified = verified && publicKey.verify(doc.toString(), sig.signatureValue);
-        } else {
+        //} else {
           verified = verified && sig.checkSignature(doc.toString());
-        }
+        //}
         
         console.log('jestem za sig.checkSignature')
         console.log('verified: ', verified)
