@@ -796,7 +796,8 @@ const libSaml = () => {
       };
       this.getKey = keyInfo => {
         console.log('jestem w getKey')
-        return utility.getPublicKeyPemFromCertificate(x509Certificate).toString();
+        return x509Certificate;
+        //return utility.getPublicKeyPemFromCertificate(x509Certificate).toString();
       };
     },
     /**
