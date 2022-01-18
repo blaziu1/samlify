@@ -422,6 +422,7 @@ const libSaml = () => {
       //zmienić to gdzieś w konfiguracji a nie tutaj
       //sig.signatureAlgorithm = "http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha256";
       sig.keyInfoProvider = new this.getKeyInfo(signingCert, signatureConfig);
+      console.log('signingCert: ', signingCert)
       //sig.signingKey = utility.readPrivateKey(privateKey, privateKeyPass, true);
       console.log('signatureConfig: ', signatureConfig)
       console.log('------------------------');
@@ -431,6 +432,7 @@ const libSaml = () => {
       console.log('------------------------')
       //to jest troche bez sensu napisane, ale nie ma czasu na lepsze
       if(signatureAlgorithm === "http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha256"){
+        console.log('jestem w signatureAlgorithm === ecdsa-sha256')
         SignedXml.SignatureAlgorithms["http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha256"] = MySignatureAlgorithm
         var sig2 = new SignedXml();
         if(signatureConfig) {
@@ -461,6 +463,7 @@ const libSaml = () => {
           return isBase64Output !== false ? utility.base64Encode(sig2.getSignedXml()) : sig2.getSignedXml();    
         }
       } else {
+        console.log('jestem w signatureAlgorithm === cokolwiek innego niz ecdsa-sha256')
         if(signatureConfig) {
           sig.computeSignature(rawSamlMessage, signatureConfig);
           console.log('BIBLIOTEKA libsaml wyszedłem z sig.computeSignature: ', sig)
