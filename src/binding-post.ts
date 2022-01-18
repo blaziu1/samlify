@@ -87,6 +87,8 @@ function base64LoginRequest(referenceTagXPath: string, entity: any, customTagRep
 */
 async function base64LoginResponse(requestInfo: any = {}, entity: any, user: any = {}, customTagReplacement?: (template: string) => BindingContext, encryptThenSign: boolean = false): Promise<BindingContext> {
   const idpSetting = entity.idp.entitySetting;
+  console.log('jestem w base64LoginResponse')
+  console.log('idpSetting: ', idpSetting)
   const spSetting = entity.sp.entitySetting;
   const id = idpSetting.generateID();
   const metadata = {
