@@ -400,7 +400,8 @@ const libSaml = () => {
         console.log('BIBLIOTEKA libsaml jestem w if1');
         sig.addReference(
           referenceTagXPath,
-          opts.transformationAlgorithms,
+          //opts.transformationAlgorithms,
+          transformationAlgorithms,
           getDigestMethod(signatureAlgorithm)
         );
       }
