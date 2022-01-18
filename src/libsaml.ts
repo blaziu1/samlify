@@ -418,9 +418,9 @@ const libSaml = () => {
         );
       }
       console.log('BIBLIOTEKA libsaml wyszedłem z tych ifów')
-      //sig.signatureAlgorithm = signatureAlgorithm;
+      sig.signatureAlgorithm = signatureAlgorithm;
       //zmienić to gdzieś w konfiguracji a nie tutaj
-      sig.signatureAlgorithm = "http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha256";
+      //sig.signatureAlgorithm = "http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha256";
       sig.keyInfoProvider = new this.getKeyInfo(signingCert, signatureConfig);
       //sig.signingKey = utility.readPrivateKey(privateKey, privateKeyPass, true);
       console.log('signatureConfig: ', signatureConfig)
@@ -429,7 +429,55 @@ const libSaml = () => {
       console.log('------------------------')
       console.log('sig: ', sig)
       console.log('------------------------')
-      SignedXml.SignatureAlgorithms["http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha256"] = MySignatureAlgorithm
+      //to jest troche bez sensu napisane, ale nie ma czasu na lepsze
+      if(signatureAlgorithm === "http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha256"){
+        SignedXml.SignatureAlgorithms["http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha256"] = MySignatureAlgorithm
+        var sig2 = new SignedXml();
+        if(signatureConfig) {
+          console.log('BIBLIOTEKA libsaml jestem w if signatureConfig');
+          console.log('skladam sig2')
+          sig2.signatureAlgorithm = "http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha256"
+          console.log('typeof privateKey: ', typeof privateKey);
+          console.log('privateKey: ', privateKey);
+          console.log('privateKey String: ', String(privateKey))
+          sig2.signingKey = privateKey
+          var transformationAlgorithms2 = [
+            'http://www.w3.org/2000/09/xmldsig#enveloped-signature',
+            'http://www.w3.org/2001/10/xml-exc-c14n#'
+          ]
+          sig2.addReference(
+            '/*',
+            transformationAlgorithms2,
+            "http://www.w3.org/2001/04/xmlenc#sha256"
+          )
+          sig2.keyInfoProvider = new MyKeyInfo(signingCert)
+          sig2.computeSignature(rawSamlMessage)
+          console.log('BIBLIOTEKA robie return z libsaml')
+          return isBase64Output !== false ? utility.base64Encode(sig2.getSignedXml()) : sig2.getSignedXml();    
+        } else {
+          console.log('BIBLIOTEKA libsaml jestem w else signatureConfig');
+          sig2.computeSignature(rawSamlMessage);
+          console.log('BIBLIOTEKA robie return z libsaml')
+          return isBase64Output !== false ? utility.base64Encode(sig2.getSignedXml()) : sig2.getSignedXml();    
+        }
+      } else {
+        if(signatureConfig) {
+          sig.computeSignature(rawSamlMessage, signatureConfig);
+          console.log('BIBLIOTEKA libsaml wyszedłem z sig.computeSignature: ', sig)
+          return isBase64Output !== false ? utility.base64Encode(sig.getSignedXml()) : sig.getSignedXml();
+        } else {
+          console.log('BIBLIOTEKA libsaml jestem w else signatureConfig');
+          sig.computeSignature(rawSamlMessage);
+          return isBase64Output !== false ? utility.base64Encode(sig.getSignedXml()) : sig.getSignedXml();
+
+        }
+      }
+    },
+
+
+
+      //poprzednia, działająca wersja
+      /*SignedXml.SignatureAlgorithms["http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha256"] = MySignatureAlgorithm
       var sig2 = new SignedXml();
       if (signatureConfig) {
         console.log('BIBLIOTEKA libsaml jestem w if signatureConfig');
@@ -460,13 +508,16 @@ const libSaml = () => {
           sig.computeSignature(rawSamlMessage, signatureConfig);
           console.log('BIBLIOTEKA libsaml wyszedłem z sig.computeSignature: ', sig)  
         }
-      } else {
+      }
+      
+      
+      else {
         console.log('BIBLIOTEKA libsaml jestem w else signatureConfig');
         sig.computeSignature(rawSamlMessage);
       }
       console.log('BIBLIOTEKA robie return z libsaml')
       return isBase64Output !== false ? utility.base64Encode(sig2.getSignedXml()) : sig2.getSignedXml();
-    },
+    },*/
     /*constructSAMLSignature(opts: SignatureConstructor) {
       const {
         rawSamlMessage,
