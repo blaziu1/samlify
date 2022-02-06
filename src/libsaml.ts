@@ -249,28 +249,21 @@ const libSaml = () => {
 
   function MySignatureAlgorithm() {
     this.getSignature = function(signedInfo, signingKey, callback){
-      console.log('signedInfo: ', signedInfo);
-      console.log('signingKey: ', String(signingKey));
       var sig = new KJUR.crypto.Signature({"alg": "SHA256withECDSA"});
       sig.init(String(signingKey));
       sig.updateString(signedInfo);
       var sigValueHex = sig.sign();
       var signature = Buffer.from(sigValueHex, 'hex').toString('base64');
-      console.log('MySignatureAlgorithm sigature: ', signature);
       if (callback) callback(null, signature)
       return signature
     }
 
     this.verifySignature = function(str, x509, signatureValue, callback){
-      console.log('str: ', str);
-      console.log('x509: ', x509);
-      //var modified_str = str + "abc";
       var sig = new KJUR.crypto.Signature({'alg':'SHA256withECDSA'});
       sig.init(x509);
       sig.updateString(str);
       var signatureToVerify = Buffer.from(signatureValue, 'base64').toString('hex');
       var res = sig.verify(signatureToVerify);
-      console.log('signature valid? : ', res);
       if (callback) callback(null, res);
       return res;
     }
@@ -301,17 +294,12 @@ const libSaml = () => {
   }*/
 
   function MyKeyInfo(cert) {
-    console.log('jestem w MyKeyInfo')
     this.cert = cert;
     this.getKeyInfo = function(key, prefix) {
-        //prefix = prefix || ''
-        //prefix = prefix ? prefix + ':' : prefix
       return "<X509Data><X509Certificate>"+ this.cert +"</X509Certificate></X509Data>"
     }
     this.getKey = function(keyInfo) {
-      //you can use the keyInfo parameter to extract the key in any way you want   
       return this.cert
-      //return fs.readFileSync("./keys/cert.pem")
     }
   }
 
@@ -377,8 +365,6 @@ const libSaml = () => {
     * @return {string} base64 encoded string
     */
      constructSAMLSignature(opts: SignatureConstructor) {
-      console.log('BIBLIOTEKA jestem w constructSAMLSignature')
-      console.log('opts: ', opts)
       const {
         rawSamlMessage,
         referenceTagXPath,
@@ -397,7 +383,6 @@ const libSaml = () => {
       const sig = new SignedXml();
       // Add assertion sections as reference
       if (referenceTagXPath) {
-        console.log('BIBLIOTEKA libsaml jestem w if1');
         sig.addReference(
           referenceTagXPath,
           //opts.transformationAlgorithms,
@@ -406,7 +391,6 @@ const libSaml = () => {
         );
       }
       if (isMessageSigned) {
-        console.log('BIBLIOTEKA libsaml jestem w if2');
         sig.addReference(
           // reference to the root node
           '/*',
@@ -418,34 +402,14 @@ const libSaml = () => {
           false,
         );
       }
-      console.log('BIBLIOTEKA libsaml wyszedłem z tych ifów')
       sig.signatureAlgorithm = signatureAlgorithm;
-      //zmienić to gdzieś w konfiguracji a nie tutaj
-      //sig.signatureAlgorithm = "http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha256";
       sig.keyInfoProvider = new this.getKeyInfo(signingCert, signatureConfig);
       sig.signingKey = utility.readPrivateKey(privateKey, privateKeyPass, true);
-      console.log('sig.signingKey: ', sig.signingKey)
-      console.log('sig.signingKey string : ', String(sig.signingKey))
-      console.log('signingCert: ', signingCert)
-      //sig.signingKey = utility.readPrivateKey(privateKey, privateKeyPass, true);
-      console.log('signatureConfig: ', signatureConfig)
-      console.log('------------------------');
-      console.log('rawSamlMessage: ', rawSamlMessage)
-      console.log('------------------------')
-      console.log('sig: ', sig)
-      console.log('------------------------')
-      //to jest troche bez sensu napisane, ale nie ma czasu na lepsze
       if(signatureAlgorithm === "http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha256"){
-        console.log('jestem w signatureAlgorithm === ecdsa-sha256')
         SignedXml.SignatureAlgorithms["http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha256"] = MySignatureAlgorithm
         var sig2 = new SignedXml();
         if(signatureConfig) {
-          console.log('BIBLIOTEKA libsaml jestem w if signatureConfig');
-          console.log('skladam sig2')
           sig2.signatureAlgorithm = "http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha256"
-          console.log('typeof privateKey: ', typeof privateKey);
-          console.log('privateKey: ', privateKey);
-          console.log('privateKey String: ', String(privateKey))
           sig2.signingKey = privateKey
           var transformationAlgorithms2 = [
             'http://www.w3.org/2000/09/xmldsig#enveloped-signature',
@@ -458,125 +422,21 @@ const libSaml = () => {
           )
           sig2.keyInfoProvider = new MyKeyInfo(signingCert)
           sig2.computeSignature(rawSamlMessage)
-          console.log('BIBLIOTEKA robie return z libsaml')
           return isBase64Output !== false ? utility.base64Encode(sig2.getSignedXml()) : sig2.getSignedXml();    
         } else {
-          console.log('BIBLIOTEKA libsaml jestem w else signatureConfig');
           sig2.computeSignature(rawSamlMessage);
-          console.log('BIBLIOTEKA robie return z libsaml')
           return isBase64Output !== false ? utility.base64Encode(sig2.getSignedXml()) : sig2.getSignedXml();    
         }
       } else {
-        console.log('jestem w signatureAlgorithm === cokolwiek innego niz ecdsa-sha256')
         if(signatureConfig) {
           sig.computeSignature(rawSamlMessage, signatureConfig);
-          console.log('BIBLIOTEKA libsaml wyszedłem z sig.computeSignature: ', sig)
           return isBase64Output !== false ? utility.base64Encode(sig.getSignedXml()) : sig.getSignedXml();
         } else {
-          console.log('BIBLIOTEKA libsaml jestem w else signatureConfig');
           sig.computeSignature(rawSamlMessage);
           return isBase64Output !== false ? utility.base64Encode(sig.getSignedXml()) : sig.getSignedXml();
-
         }
       }
     },
-
-
-
-      //poprzednia, działająca wersja
-      /*SignedXml.SignatureAlgorithms["http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha256"] = MySignatureAlgorithm
-      var sig2 = new SignedXml();
-      if (signatureConfig) {
-        console.log('BIBLIOTEKA libsaml jestem w if signatureConfig');
-        if(sig.signatureAlgorithm == "http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha256") {
-          console.log('skladam sig2')
-          sig2.signatureAlgorithm = "http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha256"
-          console.log('typeof privateKey: ', typeof privateKey);
-          console.log('privateKey: ', privateKey);
-          console.log('privateKey String: ', String(privateKey))
-          //var pem = String(privateKey).replace("-----BEGIN EC PRIVATE KEY-----", "").replace("-----END EC PRIVATE KEY-----", "").trim();
-          //console.log('pem: ', pem)
-          //var jwk2 = Eckles.importSync({pem : pem})
-          //var privateKey2 = ECDSA.fromJWK(jwk2)
-          sig2.signingKey = privateKey
-          //sig2.signingKey = utility.readPrivateKey(privateKey, privateKeyPass, true);
-          var transformationAlgorithms2 = [
-            'http://www.w3.org/2000/09/xmldsig#enveloped-signature',
-            'http://www.w3.org/2001/10/xml-exc-c14n#'
-          ]
-          sig2.addReference(
-            '/*',
-            transformationAlgorithms2,
-            "http://www.w3.org/2001/04/xmlenc#sha256"
-          )
-          sig2.keyInfoProvider = new MyKeyInfo(signingCert)
-          sig2.computeSignature(rawSamlMessage)
-        } else {
-          sig.computeSignature(rawSamlMessage, signatureConfig);
-          console.log('BIBLIOTEKA libsaml wyszedłem z sig.computeSignature: ', sig)  
-        }
-      }
-      
-      
-      else {
-        console.log('BIBLIOTEKA libsaml jestem w else signatureConfig');
-        sig.computeSignature(rawSamlMessage);
-      }
-      console.log('BIBLIOTEKA robie return z libsaml')
-      return isBase64Output !== false ? utility.base64Encode(sig2.getSignedXml()) : sig2.getSignedXml();
-    },*/
-    /*constructSAMLSignature(opts: SignatureConstructor) {
-      const {
-        rawSamlMessage,
-        referenceTagXPath,
-        privateKey,
-        privateKeyPass,
-        signatureAlgorithm = signatureAlgorithms.RSA_SHA256,
-        transformationAlgorithms = [
-          'http://www.w3.org/2000/09/xmldsig#enveloped-signature',
-          'http://www.w3.org/2001/10/xml-exc-c14n#',
-        ],
-        signingCert,
-        signatureConfig,
-        isBase64Output = true,
-        isMessageSigned = false,
-      } = opts;
-      const sig = new SignedXml();
-      // Add assertion sections as reference
-      if (referenceTagXPath) {
-        sig.addReference(
-          referenceTagXPath,
-          opts.transformationAlgorithms,
-          getDigestMethod(signatureAlgorithm)
-        );
-      }
-      if (isMessageSigned) {
-        sig.addReference(
-          // reference to the root node
-          '/*',
-          transformationAlgorithms,
-          getDigestMethod(signatureAlgorithm),
-          '',
-          '',
-          '',
-          false,
-        );
-      }
-      sig.signatureAlgorithm = signatureAlgorithm;
-      sig.keyInfoProvider = new this.getKeyInfo(signingCert, signatureConfig);
-      console.log('libsaml utility.readPrivateKey')
-      //sig.signingKey = utility.readPrivateKey(privateKey, privateKeyPass, true);
-      sig.signingKey = String(privateKey)
-      console.log('privateKey: ', String(privateKey))
-      console.log('sig.signingKey: ', sig.signingKey)
-      console.log('sig: ', sig)
-      if (signatureConfig) {
-        sig.computeSignature(rawSamlMessage, signatureConfig);
-      } else {
-        sig.computeSignature(rawSamlMessage);
-      }
-      return isBase64Output !== false ? utility.base64Encode(sig.getSignedXml()) : sig.getSignedXml();
-    },*/
     /**
     * @desc Verify the XML signature
     * @param  {string} xml xml
@@ -614,17 +474,12 @@ const libSaml = () => {
       if (selection.length === 0) {
         throw new Error('ERR_ZERO_SIGNATURE');
       }
-      console.log('libsaml verifySignature')
-      console.log('new SignedXml')
-      console.log('opts: ', opts)
       SignedXml.SignatureAlgorithms["http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha256"] = MySignatureAlgorithm
       const sig = new SignedXml();
       let verified = true;
       // need to refactor later on
       selection.forEach(signatureNode => {
-        console.log('opts.signatureAlgorithm: ', opts.signatureAlgorithm)
         sig.signatureAlgorithm = opts.signatureAlgorithm;
-        console.log('jestem za sig.signatureAlgorithm')
 
         if (!opts.keyFile && !opts.metadata) {
           throw new Error('ERR_UNDEFINED_SIGNATURE_VERIFIER_OPTIONS');
@@ -668,8 +523,6 @@ const libSaml = () => {
             }
 
             sig.keyInfoProvider = new this.getKeyInfo(x509Certificate);
-            console.log('x509Certificate: ', x509Certificate);
-            console.log('sig.keyInfoProvider: ', sig.keyInfoProvider);
             sig.x509Certificate = x509Certificate;
 
           } else {
@@ -682,11 +535,6 @@ const libSaml = () => {
         sig.loadSignature(signatureNode);
 
         doc.removeChild(signatureNode);
-        console.log('sig: ', sig)
-        console.log('************************')
-        console.log('doc.toString()', doc.toString())
-        console.log('jestem przed sig.checkSignature')
-        console.log('sig.signatureAlgorithm: ', sig.signatureAlgorithm)
 
         //console.log('metadataCert: ', metadataCert);
 
@@ -714,9 +562,6 @@ const libSaml = () => {
           verified = verified && sig.checkSignature(doc.toString());
         //}
         
-        console.log('jestem za sig.checkSignature')
-        console.log('verified: ', verified)
-
         // immediately throw error when any one of the signature is failed to get verified
         if (!verified) {
           throw new Error('ERR_FAILED_TO_VERIFY_SIGNATURE');
@@ -848,14 +693,11 @@ const libSaml = () => {
     * @return {string} public key
     */
     getKeyInfo(x509Certificate: string, signatureConfig: any = {}) {
-      console.log('jestem w getKeyInfo')
       this.getKeyInfo = key => {
-        console.log('jestem w getKeyInfo2')
         const prefix = signatureConfig.prefix ? `${signatureConfig.prefix}:` : '';
         return `<${prefix}X509Data><${prefix}X509Certificate>${x509Certificate}</${prefix}X509Certificate></${prefix}X509Data>`;
       };
       this.getKey = keyInfo => {
-        console.log('jestem w getKey')
         return "-----BEGIN CERTIFICATE-----" + x509Certificate + "-----END CERTIFICATE-----";
         //return utility.getPublicKeyPemFromCertificate(x509Certificate).toString();
       };
@@ -868,7 +710,6 @@ const libSaml = () => {
     * @return {Promise} a promise to resolve the finalized xml
     */
     encryptAssertion(sourceEntity, targetEntity, xml?: string) {
-      console.log('libsaml encryptAssertion')
       // Implement encryption after signature if it has
       return new Promise<string>((resolve, reject) => {
 
@@ -888,7 +729,6 @@ const libSaml = () => {
         }
         // Perform encryption depends on the setting, default is false
         if (sourceEntitySetting.isAssertionEncrypted) {
-          console.log('jestem w sourceEntitySetting.isAssertionEncrypted')
           xmlenc.encrypt(assertions[0].toString(), {
             // use xml-encryption module
             rsa_pub: Buffer.from(utility.getPublicKeyPemFromCertificate(targetEntityMetadata.getX509Certificate(certUse.encrypt)).replace(/\r?\n|\r/g, '')), // public key from certificate
@@ -897,15 +737,12 @@ const libSaml = () => {
             keyEncryptionAlgorithm: sourceEntitySetting.keyEncryptionAlgorithm,
           }, (err, res) => {
             if (err) {
-              console.log('err z xmlenc.encrypt')
               console.error(err);
               return reject(new Error('ERR_EXCEPTION_OF_ASSERTION_ENCRYPTION'));
             }
             if (!res) {
-              console.log('err2 z xmlenc.encrypt')
               return reject(new Error('ERR_UNDEFINED_ENCRYPTED_ASSERTION'));
             }
-            console.log('nie ma żadnego błedu')
             const { encryptedAssertion: encAssertionPrefix } = sourceEntitySetting.tagPrefix;
             const encryptAssertionNode = new dom().parseFromString(`<${encAssertionPrefix}:EncryptedAssertion xmlns:${encAssertionPrefix}="${namespace.names.assertion}">${res}</${encAssertionPrefix}:EncryptedAssertion>`);
             doc.replaceChild(encryptAssertionNode, assertions[0]);
