@@ -402,9 +402,6 @@ const libSaml = () => {
           false,
         );
       }
-      sig.signatureAlgorithm = signatureAlgorithm;
-      sig.keyInfoProvider = new this.getKeyInfo(signingCert, signatureConfig);
-      sig.signingKey = utility.readPrivateKey(privateKey, privateKeyPass, true);
       if(signatureAlgorithm === "http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha256"){
         SignedXml.SignatureAlgorithms["http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha256"] = MySignatureAlgorithm
         var sig2 = new SignedXml();
@@ -428,6 +425,9 @@ const libSaml = () => {
           return isBase64Output !== false ? utility.base64Encode(sig2.getSignedXml()) : sig2.getSignedXml();    
         }
       } else {
+        sig.signatureAlgorithm = signatureAlgorithm;
+        sig.keyInfoProvider = new this.getKeyInfo(signingCert, signatureConfig);
+        sig.signingKey = utility.readPrivateKey(privateKey, privateKeyPass, true);
         if(signatureConfig) {
           sig.computeSignature(rawSamlMessage, signatureConfig);
           return isBase64Output !== false ? utility.base64Encode(sig.getSignedXml()) : sig.getSignedXml();
